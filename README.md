@@ -7,7 +7,7 @@ My own status-bar that is used in dwm
 git clone https://github.com/nogaems/status-bar
 cd status-bar
 ```
-Edit [this] (https://github.com/nogaems/status-bar/blob/master/bar.c#L41) two lines according
+Edit [this](https://github.com/nogaems/status-bar/blob/master/bar.c#L41) two lines according
 to your own system. Then you should compile it:
 ```
 gcc bar.c -o bar -lXt -lX11 -lXext -lxkbfile -Wall
@@ -37,5 +37,6 @@ done &
 ```
 Then you have to restart dwm by pressing a shortcut (`C-S-q` by default).
 After that you will have a pretty nice minimalistic status bar like this:
-![example](https://link.to/the-pic)
+
+![example](https://github.com/nogaems/status-bar/blob/screenshot/bar-screen.png)
 
