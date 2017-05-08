@@ -6,6 +6,10 @@ My own status-bar that is used in dwm
 ```
 git clone https://github.com/nogaems/status-bar
 cd status-bar
+```
+Edit [this] (https://github.com/nogaems/status-bar/blob/master/bar.c#L41) two lines according
+to your own system. Then you should compile it:
+```
 gcc bar.c -o bar -lXt -lX11 -lXext -lxkbfile -Wall
 ```
 ## Usage:
