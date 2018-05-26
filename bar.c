@@ -79,10 +79,10 @@ getCurrentKeyboardLayout(Display *dpy, char *result)
     if (!XkbRF_GetNamesProp(dpy, &tmp, &vd) || !tmp)
     {
         /* For some reason Xkb rules are not defined */
-        
         strcpy(result, "undefined");
         return -1;
-    }   
+    }
+    free(tmp);
 
     /* Maximal number of layouts are hardcoded to 2. 
        I really don't have an idea how to handle this in case 
@@ -91,11 +91,20 @@ getCurrentKeyboardLayout(Display *dpy, char *result)
        I'll handle this behavior *later*, now it's just works. */
 
     
-    char *layouts[MAX_LAYOUTS_COUNT]; 
+    char layouts[MAX_LAYOUTS_COUNT][256];
     char *layout;
-    char *rest = vd.layout;
+    char *rest = strdup(vd.layout);
+    tmp = rest;
     int counter = 0;
-    
+    if (vd.layout)
+        free(vd.layout);
+    if (vd.model)
+        free(vd.model);
+    if (vd.options)
+        free(vd.options);
+    if (vd.variant)
+        free(vd.variant);
+
     while((layout = strtok_r(rest, ",", &rest)))
     {
         if (counter == MAX_LAYOUTS_COUNT)
@@ -103,12 +112,12 @@ getCurrentKeyboardLayout(Display *dpy, char *result)
             strcpy(result, "undefined");
             return -1;                
         }
-        layouts[counter++] = layout;
+        strcpy(layouts[counter++], layout);
     }
+    free(tmp);
     if (counter == 1)
     {
         /* There is defined only one keyboard layout */
-        
         strcpy(result, layouts[0]);
         return 0;
     }
@@ -138,7 +147,7 @@ getCurrentKeyboardLayout(Display *dpy, char *result)
 
             /* Extracting indicators names from the Atoms */
             
-	    if (XGetAtomNames(dpy, iatoms, j, iatomnames)) {
+	    if (XGetAtomNames(dpy, iatoms, j, iatomnames)) {                
 		for (i = 0; i < j; i++) {
 		    XkbGetNamedIndicator(dpy, iatoms[i], &inds[i],
                                          &istates[i], NULL, NULL);
@@ -149,24 +158,25 @@ getCurrentKeyboardLayout(Display *dpy, char *result)
                 if (!strcmp(iatomnames[i], "Group 2"))
                 {
                     /* Saving status if "Group 2" indicator */
-
                     grp2 = istates[i];
                 }
+                free(iatomnames[i]);
             }
         }
+        XkbFreeNames(xkb, XkbAllNamesMask, true);
+        free(xkb);
     }
     if (grp2 == -1)
     {
         /* Xkb settings has no status of "Group 2" indicator 
            but there is more than one layout. */
-        
         strcpy(result, "undefined");
         return -1;
     }
     else
     {
         strcpy(result, layouts[grp2]);
-    }    
+    }
     return 0;
 }
 
@@ -312,9 +322,11 @@ main(void)
         tm = mktimes("%a %x %X", tz);
         status = smprintf("%s | %s | %s " ,
                           layout, netstats, tm);
-        setstatus(status);        
+        setstatus(status);
+        free(tm);
         free(status);
-    }    
+    }
+    free(dpy);
     return 0;
 }
     
