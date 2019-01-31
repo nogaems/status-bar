@@ -39,7 +39,7 @@
 #define MAX_LAYOUTS_COUNT 2
 
 /* Settings */
-#define INTERFACE "eth1"
+#define INTERFACE "usb0"
 static char *tz = "Europe/Moscow";
 
 static Display *dpy;
