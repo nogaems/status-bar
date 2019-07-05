@@ -70,12 +70,12 @@ smprintf(char *fmt, ...)
 
 int
 getCurrentKeyboardLayout(Display *dpy, char *result)
-{    
+{
     XkbRF_VarDefsRec vd;
     char *tmp = NULL;
 
     /* Getting all the stored Xkb options */
-    
+
     if (!XkbRF_GetNamesProp(dpy, &tmp, &vd) || !tmp)
     {
         /* For some reason Xkb rules are not defined */
@@ -84,13 +84,13 @@ getCurrentKeyboardLayout(Display *dpy, char *result)
     }
     free(tmp);
 
-    /* Maximal number of layouts are hardcoded to 2. 
-       I really don't have an idea how to handle this in case 
-       of 2+ groups because this method is based on checking of 
-       the Xkb Groups which there are 2 by default. 
+    /* Maximal number of layouts are hardcoded to 2.
+       I really don't have an idea how to handle this in case
+       of 2+ groups because this method is based on checking of
+       the Xkb Groups which there are 2 by default.
        I'll handle this behavior *later*, now it's just works. */
 
-    
+
     char layouts[MAX_LAYOUTS_COUNT][256];
     char *layout;
     char *rest = strdup(vd.layout);
@@ -110,7 +110,7 @@ getCurrentKeyboardLayout(Display *dpy, char *result)
         if (counter == MAX_LAYOUTS_COUNT)
         {
             strcpy(result, "undefined");
-            return -1;                
+            return -1;
         }
         strcpy(layouts[counter++], layout);
     }
@@ -135,19 +135,19 @@ getCurrentKeyboardLayout(Display *dpy, char *result)
 	    Atom iatoms[XkbNumIndicators];
 	    char *iatomnames[XkbNumIndicators];
 	    Bool istates[XkbNumIndicators];
-	    int inds[XkbNumIndicators];            
+	    int inds[XkbNumIndicators];
 
             /* Getting all Atoms of keyboard indicators */
-            
+
 	    for (i = 0, j = 0; i < XkbNumIndicators; i++) {
-		if (xkb->names->indicators[i] != None) {                    
+		if (xkb->names->indicators[i] != None) {
 		    iatoms[j++] =  xkb->names->indicators[i];
 		}
 	    }
 
             /* Extracting indicators names from the Atoms */
-            
-	    if (XGetAtomNames(dpy, iatoms, j, iatomnames)) {                
+
+	    if (XGetAtomNames(dpy, iatoms, j, iatomnames)) {
 		for (i = 0; i < j; i++) {
 		    XkbGetNamedIndicator(dpy, iatoms[i], &inds[i],
                                          &istates[i], NULL, NULL);
@@ -168,7 +168,7 @@ getCurrentKeyboardLayout(Display *dpy, char *result)
     }
     if (grp2 == -1)
     {
-        /* Xkb settings has no status of "Group 2" indicator 
+        /* Xkb settings has no status of "Group 2" indicator
            but there is more than one layout. */
         strcpy(result, "undefined");
         return -1;
@@ -249,14 +249,13 @@ get_netusage(unsigned long long int *rec, unsigned long long int *sent)
 
 	retval = parse_netdev(&newrec, &newsent);
 	if (retval) {
-	    fprintf(stdout, "Error when parsing /proc/net/dev file.\n");
-	    exit(1);
+            return "D: N/A, U: N/A";
 	}
 
 	calculate_speed(downspeedstr, newrec, *rec);
 	calculate_speed(upspeedstr, newsent, *sent);
 
-	sprintf(retstr, "D: %s U: %s", downspeedstr, upspeedstr);
+	sprintf(retstr, "D: %s, U: %s", downspeedstr, upspeedstr);
 
 	*rec = newrec;
 	*sent = newsent;
@@ -301,7 +300,7 @@ mktimes(char *fmt, char *tzname)
 
 int
 main(void)
-{    
+{
     char *status;
     char layout[32];
     char *netstats;
@@ -309,13 +308,13 @@ main(void)
     static unsigned long long int rec, sent;
 
     parse_netdev(&rec, &sent);
-    
+
     if (!(dpy = XOpenDisplay(NULL)))
     {
         fprintf(stderr, "dwmstatus: cannot open display.\n");
 	return 1;
     }
-    for (;;sleep(1)) {        
+    for (;;sleep(1)) {
         getCurrentKeyboardLayout(dpy, layout);
         uppercase(layout);
         netstats = get_netusage(&rec, &sent);
@@ -329,5 +328,3 @@ main(void)
     free(dpy);
     return 0;
 }
-    
-
